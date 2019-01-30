@@ -103,7 +103,13 @@ AsrStream* AsrClient::get_stream() {
 }
 
 int AsrClient::destroy_stream(AsrStream* stream) {
-    stream->finish();
+    
+    if (!stream) {
+        std::cerr << "[error] stream not exits when destroy AsrStream" << std::endl;
+    }
+    if (stream->finish() != 0) {
+        std::cerr << "[error] Fail to finish stream when destroy AsrStream" << std::endl;
+    }
     delete stream;
     return 0;
 }
@@ -125,7 +131,7 @@ int AsrStream::write(const void* buffer, size_t size, bool is_last) {
     } else {
     	com::baidu::acu::pie::AudioFragmentRequest request;
     	request.set_audio_data(buffer, size);
-    	std::cout << "[debug] will run _stream->Write(request) ... ..." << std::endl;
+    	//std::cout << "[debug] will run _stream->Write(request) ... ..." << std::endl;
     	if (!_stream->Write(request)) {
 	    std::cerr << "[error] Write to stream error" << std::endl;
     	    status = -1;
@@ -146,24 +152,26 @@ int AsrStream::write(const void* buffer, size_t size, bool is_last) {
 
 int AsrStream::read(AsrStreamCallBack callback_fun, void* data) {
     AudioFragmentResponse response;
-    std::cout << "[debug] will run _stream->Read(&response) ... ..." << std::endl;
+    //std::cout << "[debug] will run _stream->Read(&response) ... ..." << std::endl;
     if (_stream->Read(&response)) {
-        std::cout << "[debug] run callback_fun ... ..." << std::endl;
+        //std::cout << "[debug] run callback_fun ... ..." << std::endl;
 	callback_fun(response, data);
         return 0;
     } else {
-        std::cout << "[debug] _stream->Read return false" << std::endl;
+        //std::cout << "[debug] _stream->Read return false" << std::endl;
         return -1;
     }
 }
 
 int AsrStream::finish() {
+    std::cout << "will run _stream->Finish()" << std::endl;
     grpc::Status status = _stream->Finish();
+    std::cout << "complete run _stream->Finish()" << std::endl;
     if (!status.ok()) {
-        std::cerr << "Fail to finish stream when destroy AsrStream" << std::endl;
-	return -1;
+        std::cerr << "[error] status stream->Finish returned is not ok" << std::endl;
+	return -1; 
     }
-    std::cout << "Stream finished." << std::endl;
+    //std::cout << "[debug] Stream finished." << std::endl;
     return 0;
 }
 

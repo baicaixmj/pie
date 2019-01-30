@@ -66,16 +66,18 @@ int main(int argc, char* argv[]) {
                     if (stream->write(buffer, count, false) != 0) {
     	                std::cerr << "[error] stream write buffer error" << std::endl;
     	                break;
-    	            }
+    	            } else {
+		        std::cout << "[debug] stream write buffer success" << std::endl;
+		    }
     	            if (count < 0) {    
                             std::cerr << "[warning] count < 0 !!!!!!!!" << std::endl;
     	        	break;
     	            }
-    	            //usleep(150*1000);
+    	            usleep(150*1000);
                 }
     	        //std::cout << "[debug] write stream " << std::endl;
     		stream->write(nullptr, 0, true);
-    	        std::cout << "[debug] count of last buffer=" << count << std::endl;
+		std::cout << "[debug] count of last buffer=" << count << std::endl;
     	    });
 
 	    // test : start read before write
@@ -88,7 +90,7 @@ int main(int argc, char* argv[]) {
 	    std::cout << "Start to read " << tmp << std::endl;
     	    while (stream->read(default_callback, tmp) == 0) {
     	        //std::cout << "[debug] read stream" << std::endl;
-    	        usleep(150*1000);
+    	        //usleep(150*1000);
     	    }
 	    std::cout << "Complete to read " << tmp << std::endl;
             
